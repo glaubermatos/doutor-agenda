@@ -23,8 +23,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
-const registerFormSchema = z.object({
-  name: z.string().trim().min(1, { message: "Nome é obrigatório" }).max(50),
+const loginFormSchema = z.object({
   email: z
     .string()
     .trim()
@@ -36,19 +35,18 @@ const registerFormSchema = z.object({
     .min(8, { message: "A senha deve ter pelo menos 8 caracteres" }),
 });
 
-const SignUpForm = () => {
+const LoginForm = () => {
   // 1. Define your form.
-  const registerForm = useForm<z.infer<typeof registerFormSchema>>({
-    resolver: zodResolver(registerFormSchema),
+  const registerForm = useForm<z.infer<typeof loginFormSchema>>({
+    resolver: zodResolver(loginFormSchema),
     defaultValues: {
-      name: "",
       email: "",
       password: "",
     },
   });
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof registerFormSchema>) {
+  function onSubmit(values: z.infer<typeof loginFormSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     console.log(values);
@@ -62,24 +60,10 @@ const SignUpForm = () => {
           className="space-y-8"
         >
           <CardHeader>
-            <CardTitle>Criar conta</CardTitle>
-            <CardDescription>Crie uma conta para continuar.</CardDescription>
+            <CardTitle>Login</CardTitle>
+            <CardDescription>Faça login para continuar.</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4">
-            <FormField
-              control={registerForm.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nome</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Digite seu nome" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
             <FormField
               control={registerForm.control}
               name="email"
@@ -114,7 +98,7 @@ const SignUpForm = () => {
           </CardContent>
           <CardFooter>
             <Button type="submit" className="w-full">
-              Criar conta
+              Entrar
             </Button>
           </CardFooter>
         </form>
@@ -123,4 +107,4 @@ const SignUpForm = () => {
   );
 };
 
-export default SignUpForm;
+export default LoginForm;
