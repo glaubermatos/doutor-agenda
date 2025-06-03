@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Trash } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { NumericFormat } from "react-number-format";
 import { toast } from "sonner";
@@ -80,28 +81,32 @@ const formSchema = z
   );
 
 interface UpsertDoctorFormProps {
+  isOpen: boolean;
   doctor?: typeof doctorsTable.$inferSelect;
   onSucess?: () => void;
 }
 
 export const UpsertDoctorForm = ({
+  isOpen,
   doctor,
   onSucess,
 }: UpsertDoctorFormProps) => {
+  const defaultValues = {
+    name: doctor?.name ?? "",
+    specialty: doctor?.specialty ?? "",
+    appointmentsPrice: doctor?.appointmentsPriceInCents
+      ? doctor.appointmentsPriceInCents / 100
+      : 0,
+    availableFromWeekDay: doctor?.availableFromWeekDay?.toString() ?? "1",
+    availableToWeekDay: doctor?.availableToWeekDay?.toString() ?? "5",
+    availableFromTime: doctor?.availableFromTime ?? "",
+    availableToTime: doctor?.availableToTime ?? "",
+  };
+
   const upsertForm = useForm<z.infer<typeof formSchema>>({
     shouldUnregister: true,
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: doctor?.name ?? "",
-      specialty: doctor?.specialty ?? "",
-      appointmentsPrice: doctor?.appointmentsPriceInCents
-        ? doctor.appointmentsPriceInCents / 100
-        : 0,
-      availableFromWeekDay: doctor?.availableFromWeekDay?.toString() ?? "1",
-      availableToWeekDay: doctor?.availableToWeekDay?.toString() ?? "5",
-      availableFromTime: doctor?.availableFromTime ?? "",
-      availableToTime: doctor?.availableToTime ?? "",
-    },
+    defaultValues: defaultValues,
   });
 
   const upsertDoctorAction = useAction(upsertDoctor, {
@@ -139,6 +144,12 @@ export const UpsertDoctorForm = ({
 
     deleteDoctorAction.execute({ id: doctor.id });
   };
+
+  useEffect(() => {
+    if (isOpen) {
+      upsertForm.reset(defaultValues);
+    }
+  }, [isOpen, formSchema, doctor]);
 
   return (
     <DialogContent>
