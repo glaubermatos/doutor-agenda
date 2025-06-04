@@ -149,6 +149,7 @@ export const UpsertDoctorForm = ({
     if (isOpen) {
       upsertForm.reset(defaultValues);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, formSchema, doctor]);
 
   return (
