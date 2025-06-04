@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Trash } from "lucide-react";
+// import { Trash } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -7,19 +7,19 @@ import { PatternFormat } from "react-number-format";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { deletePatiente } from "@/actions/delete-patient";
+// import { deletePatiente } from "@/actions/delete-patient";
 import { upsertPatient } from "@/actions/upsert-patient";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+// import {
+//   AlertDialog,
+//   AlertDialogAction,
+//   AlertDialogCancel,
+//   AlertDialogContent,
+//   AlertDialogDescription,
+//   AlertDialogFooter,
+//   AlertDialogHeader,
+//   AlertDialogTitle,
+//   AlertDialogTrigger,
+// } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
   DialogContent,
@@ -73,10 +73,10 @@ export const UpsertPatientForm = ({
   onSuccess,
 }: UpsertPatientFormProps) => {
   const defaultValues = {
-    name: "",
-    email: "",
-    phoneNumber: "",
-    sex: undefined,
+    name: patient?.name ?? "",
+    email: patient?.email ?? "",
+    phoneNumber: patient?.phoneNumber ?? "",
+    sex: patient?.sex ?? undefined,
   };
 
   const upsertForm = useForm<z.infer<typeof formSchema>>({
@@ -102,21 +102,21 @@ export const UpsertPatientForm = ({
     });
   };
 
-  const deletePatientAction = useAction(deletePatiente, {
-    onSuccess: () => {
-      toast.success("Paciente deletado com sucesso.");
-      onSuccess?.();
-    },
-    onError: () => {
-      toast.error("Erro ao deletar o paciente.");
-    },
-  });
+  //   const deletePatientAction = useAction(deletePatiente, {
+  //     onSuccess: () => {
+  //       toast.success("Paciente deletado com sucesso.");
+  //       onSuccess?.();
+  //     },
+  //     onError: () => {
+  //       toast.error("Erro ao deletar o paciente.");
+  //     },
+  //   });
 
-  const handleDeletePatientClick = () => {
-    if (!patient) return;
+  //   const handleDeletePatientClick = () => {
+  //     if (!patient) return;
 
-    deletePatientAction.execute({ id: patient.id });
-  };
+  //     deletePatientAction.execute({ id: patient.id });
+  //   };
 
   useEffect(() => {
     if (isOpen) {
@@ -128,8 +128,14 @@ export const UpsertPatientForm = ({
   return (
     <DialogContent>
       <DialogHeader>
-        <DialogTitle>{"Adicionar paciente"}</DialogTitle>
-        <DialogDescription>{"Adicione um novo paciente."}</DialogDescription>
+        <DialogTitle>
+          {patient ? patient.name : "Adicionar paciente"}
+        </DialogTitle>
+        <DialogDescription>
+          {patient
+            ? "Edite as informações desse paciente."
+            : "Adicione um novo paciente."}
+        </DialogDescription>
       </DialogHeader>
       <Form {...upsertForm}>
         <form
@@ -220,7 +226,7 @@ export const UpsertPatientForm = ({
           />
 
           <DialogFooter>
-            {patient && (
+            {/* {patient && (
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button variant="outline">
@@ -245,7 +251,7 @@ export const UpsertPatientForm = ({
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
-            )}
+            )} */}
             <Button type="submit" disabled={upsertPatientAction.isPending}>
               {upsertPatientAction.isPending
                 ? "Salvando..."

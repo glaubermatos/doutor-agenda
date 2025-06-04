@@ -6,7 +6,7 @@ import { headers } from "next/headers";
 import { z } from "zod";
 
 import { db } from "@/db";
-import { doctorsTable, patientsTable } from "@/db/schema";
+import { patientsTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { actionClient } from "@/lib/next-safe-action";
 
@@ -43,7 +43,7 @@ export const deletePatiente = actionClient
     }
 
     // deleta o paciente na base de dados
-    db.delete(patientsTable).where(eq(doctorsTable.id, parsedInput.id));
+    await db.delete(patientsTable).where(eq(patientsTable.id, parsedInput.id));
 
     revalidatePath("/patients");
   });
