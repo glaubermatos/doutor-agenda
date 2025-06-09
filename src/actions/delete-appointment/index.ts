@@ -1,0 +1,47 @@
+"use server";
+
+import { eq } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
+import { z } from "zod";
+
+import { db } from "@/db";
+import { appointmentsTable } from "@/db/schema";
+import { auth } from "@/lib/auth";
+import { actionClient } from "@/lib/next-safe-action";
+
+export const deleteAppoointment = actionClient
+  .schema(z.object({ id: z.string().uuid() }))
+  .action(async ({ parsedInput }) => {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user) {
+      throw new Error("Unauthorized");
+    }
+
+    if (!session.user.clinic?.id) {
+      throw new Error("Clínica não encontrada");
+    }
+
+    // Usuário só pode deletar agendamentos que pertencem à clínica gerenciada por ele
+    const appointment = await db.query.appointmentsTable.findFirst({
+      where: eq(appointmentsTable.id, parsedInput.id),
+    });
+
+    if (!appointment) {
+      throw new Error("Agendamento não encontrado.");
+    }
+
+    if (appointment.clinicId !== session.user.clinic.id) {
+      throw new Error("Agendamento não encontrado");
+    }
+
+    // Deleta o agendamento na base de dados
+    await db
+      .delete(appointmentsTable)
+      .where(eq(appointmentsTable.id, parsedInput.id));
+
+    revalidatePath("/appointments");
+  });

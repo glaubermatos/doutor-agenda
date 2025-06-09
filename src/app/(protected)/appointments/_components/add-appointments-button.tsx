@@ -28,7 +28,7 @@ export const AddAppointmentsButton = ({
       <DialogTrigger asChild>
         <Button>
           <Plus />
-          Adicionar agendamento
+          Agendar consulta
         </Button>
       </DialogTrigger>
 
