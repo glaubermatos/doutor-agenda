@@ -209,7 +209,7 @@ export const UpsertAppointmentForm = ({
                   <SelectContent>
                     {doctors.map((doctor) => (
                       <SelectItem key={doctor.id} value={doctor.id}>
-                        {doctor.name}
+                        {doctor.name} - {doctor.specialty}
                       </SelectItem>
                     ))}
                   </SelectContent>

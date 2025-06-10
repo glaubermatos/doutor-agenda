@@ -1,13 +1,21 @@
 // import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
-import Image from "next/image";
 import { redirect } from "next/navigation";
 
+import {
+  PageActions,
+  PageContainer,
+  PageContent,
+  PageDescription,
+  PageHeader,
+  PageHeaderContent,
+  PageTitle,
+} from "@/components/ui/page-container";
 // import { db } from "@/db";
 // import { usersToClinicsTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 
-import SignOutButton from "./_components/sign-out-button";
+import { DatePicker } from "./_components/date-picker";
 
 const DashboardPage = async () => {
   const session = await auth.api.getSession({
@@ -28,13 +36,24 @@ const DashboardPage = async () => {
   }
 
   return (
-    <div>
-      <h1>dashboard page!</h1>
-      <h1>{session?.user?.name}</h1>
-      <h1>{session?.user?.email}</h1>
-      <Image src={session.user.image!} height={32} width={32} alt="avatar" />
-      <SignOutButton />
-    </div>
+    <PageContainer>
+      <PageHeader>
+        <PageHeaderContent>
+          <PageTitle>Dashboard</PageTitle>
+          <PageDescription>
+            Gerencie os agendamentos da sua clínica
+          </PageDescription>
+        </PageHeaderContent>
+
+        <PageActions>
+          <DatePicker />
+        </PageActions>
+      </PageHeader>
+
+      <PageContent>
+        <h1>cards</h1>
+      </PageContent>
+    </PageContainer>
   );
 };
 
