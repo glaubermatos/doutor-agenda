@@ -68,4 +68,6 @@ export const addAppointment = actionClient
 
     // Revalida (recarrega) a página de agendamentos no cache do Next.js
     revalidatePath("/appointments");
+    //  // Revalida (recarrega) a página do dashboard no cache do Next.js
+    revalidatePath("/dashboard");
   });

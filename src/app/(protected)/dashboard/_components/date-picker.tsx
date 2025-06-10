@@ -1,6 +1,6 @@
 "use client";
 
-import { addMonths, format } from "date-fns";
+import { addMonths, format, isValid } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { parseAsIsoDate, useQueryState } from "nuqs";
@@ -23,23 +23,24 @@ export function DatePicker({
     "from",
     parseAsIsoDate.withDefault(new Date()),
   );
+
   const [to, setTo] = useQueryState(
     "to",
     parseAsIsoDate.withDefault(addMonths(new Date(), 1)),
   );
 
   const date = {
-    from,
-    to,
+    from: isValid(from) ? from : undefined,
+    to: isValid(to) ? to : undefined,
   };
 
   const handleDateSelect = (dateRange: DateRange | undefined) => {
     if (dateRange?.from) {
-      setFrom(dateRange.from);
+      setFrom(dateRange.from, { shallow: false });
     }
 
     if (dateRange?.to) {
-      setTo(dateRange.to);
+      setTo(dateRange.to, { shallow: false });
     }
   };
 
@@ -73,7 +74,7 @@ export function DatePicker({
                 })
               )
             ) : (
-              <span>Pick a date</span>
+              <span>Selecione o período</span>
             )}
           </Button>
         </PopoverTrigger>
