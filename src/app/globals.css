@@ -40,6 +40,8 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --color-appointments: #0b68f7;
+  --color-revenue: #10b981;
 }
 
 :root {
