@@ -1,23 +1,20 @@
-import { Session } from "better-auth";
 import dayjs from "dayjs";
 import { and, count, desc, eq, gte, lte, sql, sum } from "drizzle-orm";
 
 import { db } from "@/db";
 import { appointmentsTable, doctorsTable, patientsTable } from "@/db/schema";
 
-interface Params {
+interface GetDashboardParams {
   from: string;
   to: string;
-  session: Session & {
-    user: {
-      clinic: {
-        id: string;
-      };
-    };
-  };
+  sessionClinicId: string;
 }
 
-export const getDashboard = async ({ from, to, session }: Params) => {
+export const getDashboard = async ({
+  from,
+  to,
+  sessionClinicId,
+}: GetDashboardParams) => {
   const chartStartDate = dayjs().subtract(10, "day").startOf("day").toDate();
   const chartEndDate = dayjs().add(1, "day").endOf("day").toDate();
 
@@ -38,7 +35,7 @@ export const getDashboard = async ({ from, to, session }: Params) => {
       .from(appointmentsTable)
       .where(
         and(
-          eq(appointmentsTable.clinicId, session.user.clinic.id),
+          eq(appointmentsTable.clinicId, sessionClinicId),
           gte(appointmentsTable.date, new Date(from)),
           lte(appointmentsTable.date, new Date(to)),
         ),
@@ -50,7 +47,7 @@ export const getDashboard = async ({ from, to, session }: Params) => {
       .from(appointmentsTable)
       .where(
         and(
-          eq(appointmentsTable.clinicId, session.user.clinic.id),
+          eq(appointmentsTable.clinicId, sessionClinicId),
           gte(appointmentsTable.date, new Date(from)),
           lte(appointmentsTable.date, new Date(to)),
         ),
@@ -60,13 +57,13 @@ export const getDashboard = async ({ from, to, session }: Params) => {
         total: count(),
       })
       .from(patientsTable)
-      .where(eq(patientsTable.clinicId, session.user.clinic.id)),
+      .where(eq(patientsTable.clinicId, sessionClinicId)),
     db
       .select({
         total: count(),
       })
       .from(doctorsTable)
-      .where(eq(doctorsTable.clinicId, session.user.clinic.id)),
+      .where(eq(doctorsTable.clinicId, sessionClinicId)),
     db
       .select({
         id: doctorsTable.id,
@@ -84,7 +81,7 @@ export const getDashboard = async ({ from, to, session }: Params) => {
           lte(appointmentsTable.date, new Date(to)),
         ),
       )
-      .where(eq(doctorsTable.clinicId, session.user.clinic.id))
+      .where(eq(doctorsTable.clinicId, sessionClinicId))
       .groupBy(doctorsTable.id)
       .orderBy(desc(count(appointmentsTable.id)))
       .limit(10),
@@ -97,7 +94,7 @@ export const getDashboard = async ({ from, to, session }: Params) => {
       .innerJoin(doctorsTable, eq(appointmentsTable.doctorId, doctorsTable.id))
       .where(
         and(
-          eq(appointmentsTable.clinicId, session.user.clinic.id),
+          eq(appointmentsTable.clinicId, sessionClinicId),
           gte(appointmentsTable.date, new Date(from)),
           lte(appointmentsTable.date, new Date(to)),
         ),
@@ -106,7 +103,7 @@ export const getDashboard = async ({ from, to, session }: Params) => {
       .orderBy(desc(count(appointmentsTable.id))),
     db.query.appointmentsTable.findMany({
       where: and(
-        eq(appointmentsTable.clinicId, session.user.clinic.id),
+        eq(appointmentsTable.clinicId, sessionClinicId),
         gte(appointmentsTable.date, new Date()),
         lte(appointmentsTable.date, new Date()),
       ),
@@ -127,7 +124,7 @@ export const getDashboard = async ({ from, to, session }: Params) => {
       .from(appointmentsTable)
       .where(
         and(
-          eq(appointmentsTable.clinicId, session.user.clinic.id),
+          eq(appointmentsTable.clinicId, sessionClinicId),
           gte(appointmentsTable.date, chartStartDate),
           lte(appointmentsTable.date, chartEndDate),
         ),
