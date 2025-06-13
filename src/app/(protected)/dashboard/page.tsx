@@ -40,14 +40,18 @@ const DashboardPage = async ({ searchParams }: DashboardPageProps) => {
     redirect("/authentication");
   }
 
+  if (!session.user.clinic) {
+    redirect("/clinic-form");
+  }
+
+  if (!session.user.plan) {
+    redirect("/new-subscription");
+  }
+
   // precisa pegar as clinicas do usuário
   // const clinics = await db.query.usersToClinicsTable.findMany({
   //   where: eq(usersToClinicsTable.userId, session.user.id),
   // });
-
-  if (!session.user.clinic) {
-    redirect("/clinic-form");
-  }
 
   const { from, to } = await searchParams;
 

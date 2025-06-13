@@ -1,5 +1,7 @@
-import { Button } from "@/components/ui/button";
+import { redirect } from "next/navigation";
 
-export default function Home() {
-  return <Button>Bootcamp Sass</Button>;
-}
+const Home = () => {
+  redirect("/dashboard");
+};
+
+export default Home;
