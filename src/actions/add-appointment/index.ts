@@ -2,33 +2,32 @@
 
 import dayjs from "dayjs";
 import { revalidatePath } from "next/cache";
-import { headers } from "next/headers";
 
 import { db } from "@/db";
 import { appointmentsTable } from "@/db/schema";
-import { auth } from "@/lib/auth";
-import { actionClient } from "@/lib/next-safe-action";
+import { protectedActionClientWithClinic } from "@/lib/next-safe-action";
 
 import { getAvailableTimes } from "../get-available-times";
 import { addAppointmentSchema } from "./schema";
 
-export const addAppointment = actionClient
+export const addAppointment = protectedActionClientWithClinic
   .schema(addAppointmentSchema)
-  .action(async ({ parsedInput }) => {
-    // Recupera a sessão do usuário autenticado a partir dos headers
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
+  .action(async ({ parsedInput, ctx }) => {
+    // // protectedActionClientWithClinic é um cliente de ação protegido que garante que o usuário esteja autenticado e vinculado a uma clínica.
+    // // Recupera a sessão do usuário autenticado a partir dos headers
+    // const session = await auth.api.getSession({
+    //   headers: await headers(),
+    // });
 
-    // Verifica se o usuário está autenticado
-    if (!session?.user) {
-      throw new Error("Unauthorized"); // Lança erro se não estiver autenticado
-    }
+    // // Verifica se o usuário está autenticado
+    // if (!session?.user) {
+    //   throw new Error("Unauthorized"); // Lança erro se não estiver autenticado
+    // }
 
     // Verifica se o usuário está vinculado a uma clínica
-    if (!session.user.clinic?.id) {
-      throw new Error("Clinica não encontrada"); // Lança erro se não tiver clínica associada
-    }
+    // if (!ctx.user.clinic?.id) {
+    //   throw new Error("Clinica não encontrada"); // Lança erro se não tiver clínica associada
+    // }
 
     // Busca os horários disponíveis para o médico na data fornecida
     // usando a server action getAvailableTimes
@@ -62,7 +61,7 @@ export const addAppointment = actionClient
     // Insere um novo agendamento no banco de dados
     await db.insert(appointmentsTable).values({
       ...parsedInput,
-      clinicId: session.user.clinic.id,
+      clinicId: ctx.user.clinic.id,
       date: appointmentDateTime, // Define a data e hora do agendamento
     });
 

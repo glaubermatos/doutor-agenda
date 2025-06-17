@@ -3,32 +3,18 @@
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { revalidatePath } from "next/cache";
-import { headers } from "next/headers";
 
 import { db } from "@/db";
 import { doctorsTable } from "@/db/schema";
-import { auth } from "@/lib/auth";
-import { actionClient } from "@/lib/next-safe-action";
+import { protectedActionClientWithClinic } from "@/lib/next-safe-action";
 
 import { upsertDoctorSchema } from "./schema";
 
 dayjs.extend(utc);
 
-export const upsertDoctor = actionClient
+export const upsertDoctor = protectedActionClientWithClinic
   .schema(upsertDoctorSchema)
-  .action(async ({ parsedInput }) => {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    if (!session?.user) {
-      throw new Error("Unauthorized");
-    }
-
-    if (!session?.user.clinic?.id) {
-      throw new Error("Clinic not found");
-    }
-
+  .action(async ({ parsedInput, ctx }) => {
     const availableFromTime = parsedInput.availableFromTime; // 15:00:00
     const availableToTime = parsedInput.availableToTime; // 16:00:00
 
@@ -51,7 +37,7 @@ export const upsertDoctor = actionClient
       .values({
         ...parsedInput,
         id: parsedInput.id,
-        clinicId: session?.user.clinic?.id,
+        clinicId: ctx.user.clinic.id,
         //converter os horarios para UTC
         availableFromTime: availableFromTimeUtc.format("HH:mm:ss"),
         availableToTime: availableToTimeUtc.format("HH:mm:ss"),
