@@ -1,8 +1,8 @@
 import {
   Calendar1Icon,
   DollarSignIcon,
+  Stethoscope,
   UserIcon,
-  UsersIcon,
 } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -33,14 +33,14 @@ const StatsCard = ({
       icon: Calendar1Icon,
     },
     {
+      title: "Médicos",
+      value: totalDoctors.toString(),
+      icon: Stethoscope,
+    },
+    {
       title: "Pacientes",
       value: totalPatients.toString(),
       icon: UserIcon,
-    },
-    {
-      title: "Médicos",
-      value: totalDoctors.toString(),
-      icon: UsersIcon,
     },
   ];
 
